@@ -1,0 +1,40 @@
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jugar | CryptoChicks</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+    }
+  </style>
+</head>
+
+<body class="bg-gradient-to-b from-purple-100 via-white to-pink-100 min-h-screen flex flex-col">
+
+  <header class="bg-purple-700 text-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold">CryptoChicks</h1>
+      <nav class="space-x-4 text-lg">
+        <a href="/" class="bg-white text-purple-700 px-4 py-1 rounded-full hover:bg-purple-100">Inicio</a>
+        <a href="/dashboard.html" class="bg-white text-purple-700 px-4 py-1 rounded-full hover:bg-purple-100">Dashboard</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Juego WebGL -->
+  <main class="flex justify-center items-center flex-1 py-12 px-4">
+    <iframe src="/unity/index.html" width="960" height="600" frameborder="0" class="rounded-2xl shadow-lg"></iframe>
+  </main>
+
+  <footer class="bg-purple-700 text-white text-center py-6">
+    <p>&copy; 2025 CryptoChicks. Aprende Web3 jugando.</p>
+  </footer>
+</body>
+
+</html>

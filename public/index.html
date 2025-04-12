@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-i18n="heroTitle">CryptoChicks Web3</title>
+
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/2/26/Crystal_personal.svg" type="image/svg+xml">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    body {
+      font-family: "Nunito", sans-serif;
+    }
+  </style>
+</head>
+
+<body class="bg-gradient-to-b from-purple-100 via-white to-pink-100 min-h-screen flex flex-col">
+  <!-- Barra -->
+  <header class="bg-purple-700 text-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold">CryptoChicks</h1>
+      <nav class="space-x-6 text-lg flex items-center">
+        <a href="/" class="hover:underline" data-i18n="navHome">Inicio</a>
+        <a href="#" onclick="validarAccesoJuego('/juego.html')" id="jugarBtn" class="hover:underline" data-i18n="navPlay">Jugar</a>
+        <a href="/dashboard.html" id="estadisticasBtn" class="hover:underline hidden" data-i18n="navStats">Estadísticas</a>
+        <a href="#" onclick="validarAccesoJuego('/foro.html')" class="hover:underline" data-i18n="navForum">Foro</a>
+
+        <!-- Botones de login/register -->
+        <button
+          id="btnLogin"
+          onclick="mostrarLogin()"
+          class="bg-white text-purple-700 px-4 py-1 rounded-full hover:bg-purple-100"
+          data-i18n="btnLogin"
+        >
+          Iniciar sesión
+        </button>
+        <button
+          id="btnRegistro"
+          onclick="mostrarRegistro()"
+          class="bg-white text-purple-700 px-4 py-1 rounded-full hover:bg-purple-100"
+          data-i18n="btnRegister"
+        >
+          Registrarse
+        </button>
+
+        <!-- Botón Admin (solo visible para rol=admin) -->
+        <button
+          id="adminBtn"
+          onclick="window.location.href='/admin.html'"
+          class="bg-red-600 text-white px-4 py-1 rounded-full hover:bg-red-700 hidden"
+          data-i18n="btnAdmin"
+        >
+          Admin
+        </button>
+
+        <!-- Nombre de usuario -->
+        <span
+          id="nombreUsuario"
+          class="hidden bg-white text-purple-700 px-4 py-1 rounded-full"
+        ></span>
+
+        <!-- Botón Cerrar Sesión -->
+        <button
+          id="logoutBtn"
+          onclick="cerrarSesion()"
+          class="bg-white text-purple-700 px-4 py-1 rounded-full hover:bg-purple-100 hidden"
+          data-i18n="btnLogout"
+        >
+          Cerrar sesión
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <section
+    class="flex-1 flex items-center justify-center text-center px-4 py-16 bg-purple-50"
+  >
+    <div class="max-w-2xl">
+      <h2
+        class="text-4xl md:text-5xl font-extrabold text-purple-800 leading-tight"
+        data-i18n="heroTitle"
+      >
+        Ayuda a Cryptogirl a Salvar el Mundo
+      </h2>
+      <p class="mt-4 text-lg text-purple-600" data-i18n="heroDesc">
+        Adéntrate en una aventura intergaláctica, aprende sobre Web3 mientras derrotas enemigos, recoges monedas y salvas el planeta de Voris.
+      </p>
+      <div class="mt-6">
+        <a
+          href="#"
+          onclick="validarAccesoJuego('/juego.html')"
+          class="bg-purple-600 text-white px-6 py-3 rounded-full text-lg hover:bg-purple-800 transition"
+          data-i18n="heroBtn"
+        >
+          Inicia tu viaje
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16 bg-purple-50">
+    <div
+      class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-10"
+    >
+      <div class="bg-white p-6 rounded-2xl shadow">
+        <h3 class="text-xl font-bold text-purple-800 mb-2">Aventura Educativa</h3>
+        <p>
+          Explora niveles con narrativa, recoge monedas y aprende Web3 de manera divertida.
+        </p>
+      </div>
+      <div class="bg-white p-6 rounded-2xl shadow">
+        <h3 class="text-xl font-bold text-purple-800 mb-2">Accesible y Gratuito</h3>
+        <p>
+          No necesitas conocimientos previos ni equipos de alta gama. Diseñado para todos.
+        </p>
+      </div>
+      <div class="bg-white p-6 rounded-2xl shadow">
+        <h3 class="text-xl font-bold text-purple-800 mb-2">Progreso Guardado</h3>
+        <p>
+          Regístrate dentro del juego para guardar tus logros, medallas y estadísticas.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pie de página -->
+  <footer class="bg-purple-700 text-white text-center py-6 mt-8">
+    <p data-i18n="footerMsg">&copy; 2025 CryptoChicks. Diseñado para empoderar.</p>
+  </footer>
+
+  <div
+    id="modalRegistro"
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50"
+  >
+    <div class="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
+      <h2 class="text-xl font-bold text-purple-800 mb-4">Registro de Usuario</h2>
+      <form id="formRegistroUsuario" class="space-y-4">
+        <input
+          type="text"
+          id="registroNombre"
+          placeholder="Nombre de usuario"
+          required
+          class="w-full px-4 py-2 border rounded"
+        />
+        <input
+          type="email"
+          id="registroCorreo"
+          placeholder="Correo"
+          required
+          class="w-full px-4 py-2 border rounded"
+        />
+        <input
+          type="password"
+          id="registroPassword"
+          placeholder="Contraseña"
+          required
+          class="w-full px-4 py-2 border rounded"
+        />
+
+        <select
+          id="registroGenero"
+          required
+          class="w-full px-4 py-2 border rounded"
+        >
+          <option value="">Selecciona tu género</option>
+          <option value="masculino">Masculino</option>
+          <option value="femenino">Femenino</option>
+          <option value="otro">Otro</option>
+          <option value="prefiero no responder">Prefiero no responder</option>
+        </select>
+
+        <div class="flex justify-between">
+          <button
+            type="submit"
+            class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-800"
+          >
+            Registrar
+          </button>
+          <button
+            type="button"
+            onclick="cerrarRegistro()"
+            class="text-sm text-gray-500 hover:underline"
+          >
+            Cancelar
+          </button>
+        </div>
+      </form>
+      <p
+        id="errorRegistro"
+        class="text-red-500 mt-2 text-sm hidden"
+      >
+        Hubo un error al registrar.
+      </p>
+    </div>
+  </div>
+
+  <div
+    id="modalLogin"
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50"
+  >
+    <div class="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
+      <h2 class="text-xl font-bold text-purple-800 mb-4">Iniciar sesión</h2>
+      <form id="formLoginUsuario" class="space-y-4">
+        <input
+          type="email"
+          id="correoUsuario"
+          placeholder="Correo"
+          required
+          class="w-full px-4 py-2 border rounded"
+        />
+        <input
+          type="password"
+          id="passwordUsuario"
+          placeholder="Contraseña"
+          required
+          class="w-full px-4 py-2 border rounded"
+        />
+        <div class="flex justify-between">
+          <button
+            type="submit"
+            class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-800"
+          >
+            Entrar
+          </button>
+          <button
+            type="button"
+            onclick="cerrarLogin()"
+            class="text-sm text-gray-500 hover:underline"
+          >
+            Cancelar
+          </button>
+        </div>
+      </form>
+      <p
+        id="errorLogin"
+        class="text-red-500 mt-2 text-sm hidden"
+      >
+        Credenciales incorrectas.
+      </p>
+    </div>
+  </div>
+
+  <script>
+
+    function mostrarLogin() {
+      document.getElementById("modalLogin").classList.remove("hidden");
+    }
+    function cerrarLogin() {
+      document.getElementById("modalLogin").classList.add("hidden");
+      document.getElementById("formLoginUsuario").reset();
+      document.getElementById("errorLogin").classList.add("hidden");
+    }
+    function mostrarRegistro() {
+      document.getElementById("modalRegistro").classList.remove("hidden");
+    }
+    function cerrarRegistro() {
+      document.getElementById("modalRegistro").classList.add("hidden");
+      document.getElementById("formRegistroUsuario").reset();
+      document.getElementById("errorRegistro").classList.add("hidden");
+    }
+
+    function cerrarSesion() {
+      if (confirm("¿Deseas cerrar sesión?")) {
+        localStorage.clear();
+        window.location.href = "/";
+      }
+    }
+
+    document
+      .getElementById("formRegistroUsuario")
+      .addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const nombre = document.getElementById("registroNombre").value;
+        const correo = document.getElementById("registroCorreo").value;
+        const contraseña = document.getElementById("registroPassword").value;
+        const genero = document.getElementById("registroGenero").value;
+        try {
+          const res = await fetch("/api/registro", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              nombre_usuario: nombre,
+              correo,
+              contraseña,
+              genero,
+            }),
+          });
+          if (res.ok) {
+            cerrarRegistro();
+            alert("Registro exitoso. Ahora puedes iniciar sesión.");
+          } else {
+            document.getElementById("errorRegistro").classList.remove("hidden");
+          }
+        } catch (err) {
+          console.error("Error registrando usuario:", err);
+          document.getElementById("errorRegistro").classList.remove("hidden");
+        }
+      });
+
+    document
+      .getElementById("formLoginUsuario")
+      .addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const correo = document.getElementById("correoUsuario").value;
+        const contraseña = document.getElementById("passwordUsuario").value;
+
+        try {
+          const res = await fetch("/api/login-usuario", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ correo, contraseña }),
+          });
+          const data = await res.json();
+
+          if (res.ok && data.acceso === "concedido") {
+            localStorage.setItem("usuario_id", data.usuario_id);
+            if (data.nombre_usuario) {
+              localStorage.setItem("nombre_usuario", data.nombre_usuario);
+            }
+            if (data.rol) {
+              localStorage.setItem("rol", data.rol);
+            }
+            if (data.genero) {
+              localStorage.setItem("genero", data.genero);
+            }
+
+            cerrarLogin();
+            document.getElementById("btnLogin").classList.add("hidden");
+            document.getElementById("btnRegistro").classList.add("hidden");
+            document.getElementById("estadisticasBtn").classList.remove("hidden");
+
+            const nombreStorage = localStorage.getItem("nombre_usuario");
+            if (nombreStorage) {
+              const nombreUsuarioSpan = document.getElementById("nombreUsuario");
+              nombreUsuarioSpan.textContent = nombreStorage;
+              nombreUsuarioSpan.classList.remove("hidden");
+            }
+
+            const rolStorage = localStorage.getItem("rol");
+            if (rolStorage === "admin") {
+              document.getElementById("adminBtn").classList.remove("hidden");
+            }
+
+            document.getElementById("logoutBtn").classList.remove("hidden");
+          } else {
+            document.getElementById("errorLogin").classList.remove("hidden");
+          }
+        } catch (err) {
+          console.error("Error login:", err);
+          document.getElementById("errorLogin").classList.remove("hidden");
+        }
+      });
+
+    function validarAccesoJuego(destino = "/jugar.html") {
+      const id = localStorage.getItem("usuario_id");
+      if (id) {
+        window.location.href = destino;
+      } else {
+        mostrarLogin();
+      }
+    }
+
+    window.onload = () => {
+      const id = localStorage.getItem("usuario_id");
+      if (id) {
+        document.getElementById("btnLogin").classList.add("hidden");
+        document.getElementById("btnRegistro").classList.add("hidden");
+        document.getElementById("estadisticasBtn").classList.remove("hidden");
+
+        const nombreStorage = localStorage.getItem("nombre_usuario");
+        if (nombreStorage) {
+          const nombreUsuarioSpan = document.getElementById("nombreUsuario");
+          nombreUsuarioSpan.textContent = nombreStorage;
+          nombreUsuarioSpan.classList.remove("hidden");
+        }
+
+        const rolStorage = localStorage.getItem("rol");
+        if (rolStorage === "admin") {
+          document.getElementById("adminBtn").classList.remove("hidden");
+        }
+
+        document.getElementById("logoutBtn").classList.remove("hidden");
+      }
+    };
+  </script>
+
+</body>
+</html>

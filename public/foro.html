@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Foro | CryptoChicks</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+    }
+  </style>
+</head>
+
+<body class="bg-gradient-to-b from-purple-100 via-white to-pink-100 min-h-screen">
+
+  <header class="bg-purple-700 text-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold">CryptoChicks</h1>
+      <nav class="space-x-4 text-lg">
+        <a href="/" class="bg-white text-purple-700 px-4 py-1 rounded-full hover:bg-purple-100">Inicio</a>
+        <a href="/dashboard.html" class="bg-white text-purple-700 px-4 py-1 rounded-full hover:bg-purple-100">Dashboard</a>
+        <a href="/jugar.html" class="bg-white text-purple-700 px-4 py-1 rounded-full hover:bg-purple-100">Jugar</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Foro Principal -->
+  <main class="max-w-5xl mx-auto px-4 py-10">
+    <h2 class="text-3xl font-bold text-purple-800 mb-6 text-center">Foro de Ayuda</h2>
+    <p class="text-center text-purple-600 mb-6">¿Atorada con un nivel o no entiendes algún concepto? Busca una pregunta o publica la tuya y recibe ayuda de otras usuarias.</p>
+
+
+    <div class="mb-8 flex flex-col md:flex-row justify-center gap-4 items-center">
+      <div class="flex w-full max-w-xl">
+        <input id="busquedaInput" type="text" placeholder="Buscar por pregunta o palabra clave"
+          class="w-full px-4 py-2 rounded-l border border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-500">
+        <button onclick="buscarPreguntas()"
+          class="bg-purple-600 text-white px-4 py-2 rounded-r hover:bg-purple-800 transition">Buscar</button>
+      </div>
+      <a href="/enviar_pregunta.html" class="bg-green-600 text-white px-6 py-2 rounded-full hover:bg-green-800 transition">Publicar Pregunta</a>
+    </div>
+
+    <div id="listaPreguntas" class="space-y-6">
+
+    </div>
+  </main>
+
+  <footer class="bg-purple-700 text-white text-center py-6 mt-12">
+    <p>&copy; 2025 CryptoChicks. Conectando conocimiento.</p>
+  </footer>
+
+  <script>
+    async function cargarPreguntas() {
+      try {
+        const res = await fetch('/api/foro');
+        const preguntas = await res.json();
+
+        const contenedor = document.getElementById('listaPreguntas');
+        contenedor.innerHTML = '';
+
+        preguntas.forEach(p => {
+          const div = document.createElement('div');
+          div.className = 'bg-white p-4 rounded-xl shadow';
+          div.innerHTML = `
+            <h3 class="text-lg font-bold text-purple-800">${p.titulo}</h3>
+            <p class="text-sm text-purple-600">Publicado por: <span class="font-semibold">${p.nombre_usuario}</span> | Palabras clave: ${p.palabras_clave}</p>
+            <a href="/foro/pregunta.html?id=${p.pregunta_id}" class="text-purple-700 hover:underline text-sm">Ver respuestas</a>
+          `;
+          contenedor.appendChild(div);
+        });
+      } catch (err) {
+        console.error('Error cargando preguntas:', err);
+      }
+    }
+
+    function buscarPreguntas() {
+      const input = document.getElementById('busquedaInput').value.toLowerCase();
+      const preguntas = document.querySelectorAll('#listaPreguntas > div');
+
+      preguntas.forEach(div => {
+        const texto = div.innerText.toLowerCase();
+        div.style.display = texto.includes(input) ? 'block' : 'none';
+      });
+    }
+
+    cargarPreguntas();
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Admin | CryptoChicks</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    table th, table td {
+      border: 1px solid #ccc;
+      padding: 8px;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen">
+
+  <header class="bg-purple-700 text-white shadow">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold">Panel de Administración</h1>
+      <a href="/" class="bg-white text-purple-700 px-4 py-2 rounded hover:bg-purple-100">Regresar a Inicio</a>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-8">
+
+    <section class="mb-12">
+      <h2 class="text-xl font-bold text-purple-800 mb-4">Usuarios registrados</h2>
+      <div id="tablaUsuarios" class="overflow-x-auto bg-white shadow rounded-lg p-4"></div>
+    </section>
+
+    <!-- Preguntas del foro -->
+    <section class="mb-12">
+      <h2 class="text-xl font-bold text-purple-800 mb-4">Preguntas del foro</h2>
+      <div id="tablaPreguntas" class="overflow-x-auto bg-white shadow rounded-lg p-4"></div>
+    </section>
+
+    <!-- Respuestas del foro -->
+    <section>
+      <h2 class="text-xl font-bold text-purple-800 mb-4">Respuestas del foro</h2>
+      <div id="tablaRespuestas" class="overflow-x-auto bg-white shadow rounded-lg p-4"></div>
+    </section>
+  </main>
+
+  <script>
+    async function cargarUsuarios() {
+      try {
+        const res = await fetch('/api/admin/usuarios');
+        const usuarios = await res.json();
+        let html = `<table><thead>
+          <tr>
+            <th>ID</th><th>Nombre</th><th>Rol</th><th>Acciones</th>
+          </tr></thead><tbody>`;
+        usuarios.forEach(u => {
+          html += `
+            <tr>
+              <td>${u.usuario_id}</td>
+              <td>${u.nombre_usuario}</td>
+              <td>${u.rol}</td>
+              <td>
+                <button onclick="eliminarUsuario(${u.usuario_id})"
+                  class="bg-red-500 text-white px-2 py-1 rounded">
+                  Eliminar
+                </button>
+                ${u.rol === 'usuario' ? `
+                  <button onclick="hacerAdmin(${u.usuario_id})"
+                    class="bg-green-600 text-white px-2 py-1 rounded ml-2">
+                    Hacer Admin
+                  </button>` : ''}
+              </td>
+            </tr>`;
+        });
+        html += '</tbody></table>';
+        document.getElementById('tablaUsuarios').innerHTML = html;
+      } catch (err) {
+        console.error('Error cargando usuarios:', err);
+      }
+    }
+
+    async function cargarPreguntas() {
+      try {
+        const res = await fetch('/api/admin/preguntas');
+        const preguntas = await res.json();
+        let html = `<table><thead>
+          <tr>
+            <th>ID</th><th>Título</th><th>Usuario</th><th>Fecha</th><th>Acciones</th>
+          </tr></thead><tbody>`;
+        preguntas.forEach(p => {
+          html += `
+            <tr>
+              <td>${p.pregunta_id}</td>
+              <td>${p.titulo}</td>
+              <td>${p.nombre_usuario}</td>
+              <td>${new Date(p.fecha).toLocaleString()}</td>
+              <td>
+                <button onclick="eliminarPregunta(${p.pregunta_id})"
+                  class="bg-red-500 text-white px-2 py-1 rounded">
+                  Eliminar
+                </button>
+              </td>
+            </tr>`;
+        });
+        html += '</tbody></table>';
+        document.getElementById('tablaPreguntas').innerHTML = html;
+      } catch (err) {
+        console.error('Error cargando preguntas:', err);
+      }
+    }
+
+    async function cargarRespuestas() {
+      try {
+        const res = await fetch('/api/admin/respuestas');
+        const respuestas = await res.json();
+        let html = `<table><thead>
+          <tr>
+            <th>ID</th><th>Contenido</th><th>Usuario</th><th>Fecha</th><th>Acciones</th>
+          </tr></thead><tbody>`;
+        respuestas.forEach(r => {
+          html += `
+            <tr>
+              <td>${r.respuesta_id}</td>
+              <td>${r.contenido}</td>
+              <td>${r.nombre_usuario}</td>
+              <td>${new Date(r.fecha).toLocaleString()}</td>
+              <td>
+                <button onclick="eliminarRespuesta(${r.respuesta_id})"
+                  class="bg-red-500 text-white px-2 py-1 rounded">
+                  Eliminar
+                </button>
+              </td>
+            </tr>`;
+        });
+        html += '</tbody></table>';
+        document.getElementById('tablaRespuestas').innerHTML = html;
+      } catch (err) {
+        console.error('Error cargando respuestas:', err);
+      }
+    }
+
+    async function eliminarUsuario(id) {
+      if (confirm('¿Eliminar este usuario?')) {
+        await fetch(`/api/admin/usuarios/${id}`, { method: 'DELETE' });
+        cargarUsuarios();
+      }
+    }
+
+    async function hacerAdmin(id) {
+      await fetch(`/api/admin/usuarios/${id}/hacer-admin`, { method: 'PUT' });
+      cargarUsuarios();
+    }
+
+    async function eliminarPregunta(id) {
+      if (confirm('¿Eliminar esta pregunta? Se borrarán sus respuestas también.')) {
+        await fetch(`/api/admin/preguntas/${id}`, { method: 'DELETE' });
+        cargarPreguntas();
+      }
+    }
+
+    async function eliminarRespuesta(id) {
+      if (confirm('¿Eliminar esta respuesta?')) {
+        await fetch(`/api/admin/respuestas/${id}`, { method: 'DELETE' });
+        cargarRespuestas();
+      }
+    }
+
+    // Al cargar la página, cargar listas
+    cargarUsuarios();
+    cargarPreguntas();
+    cargarRespuestas();
+  </script>
+</body>
+
+</html>
